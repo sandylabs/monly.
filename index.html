@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>54NFISCAL - filtered Edition</title>
+    <title>54NFISCAL - Fully Filtered</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,6 @@
         .excel-table tr:nth-child(even) { background: rgba(255,255,255,0.01); }
         .excel-table tr:hover { background: rgba(59, 130, 246, 0.05); }
 
-        /* Modern Radio & Filter Style */
         .radio-container, .filter-container {
             display: flex;
             background: #0f172a;
@@ -40,7 +39,6 @@
         }
         #type-in:checked + label { background: #10b981; color: white; }
         #type-out:checked + label { background: #f43f5e; color: white; }
-        
         .filter-container input:checked + label { background: #3b82f6; color: white; }
     </style>
 </head>
@@ -48,37 +46,58 @@
 
     <header class="px-2">
         <h1 class="text-3xl font-extrabold italic tracking-tighter text-white">54N<span class="text-blue-500">FISCAL</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Smart Filter Analytics</p>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Unified Filter Analytics</p>
     </header>
+
+    <div class="filter-container max-w-md mx-auto">
+        <input type="radio" name="filter" id="filter-all" value="all" checked onchange="update()">
+        <label for="filter-all" class="filter-label">SEMUA</label>
+        <input type="radio" name="filter" id="filter-day" value="day" onchange="update()">
+        <label for="filter-day" class="filter-label">HARI INI</label>
+        <input type="radio" name="filter" id="filter-week" value="week" onchange="update()">
+        <label for="filter-week" class="filter-label">MINGGU INI</label>
+        <input type="radio" name="filter" id="filter-month" value="month" onchange="update()">
+        <label for="filter-month" class="filter-label">BULAN INI</label>
+        <input type="radio" name="filter" id="filter-year" value="year" onchange="update()">
+        <label for="filter-year" class="filter-label">TAHUN INI</label>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="glass p-6 rounded-[2rem] border-l-4 border-blue-500 shadow-xl">
-            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Saldo Saat Ini</p>
+            <p id="stat-label-bal" class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Saldo Filter</p>
             <h2 id="bal-txt" class="text-2xl font-extrabold text-white">Rp 0</h2>
         </div>
         <div class="glass p-6 rounded-[2rem] border-l-4 border-emerald-500">
-            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Masuk</p>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pemasukan</p>
             <h2 id="inc-txt" class="text-xl font-extrabold text-emerald-400">Rp 0</h2>
         </div>
         <div class="glass p-6 rounded-[2rem] border-l-4 border-rose-500">
-            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Keluar</p>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pengeluaran</p>
             <h2 id="exp-txt" class="text-xl font-extrabold text-rose-400">Rp 0</h2>
         </div>
+    </div>
+
+    <div class="glass p-6 rounded-[2rem]">
+        <div class="flex justify-between items-center mb-6 px-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Filtered Equity Curve</h3>
+            <span id="chart-tag" class="text-[9px] text-blue-400 font-bold bg-blue-500/10 px-3 py-1 rounded-full uppercase italic">All Time</span>
+        </div>
+        <div class="h-44"><canvas id="myChart"></canvas></div>
     </div>
 
     <div class="glass p-6 rounded-[2rem] border border-white/5 shadow-2xl">
         <form id="tx-form" class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="md:col-span-2">
-                <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Detail Transaksi</label>
-                <input type="text" id="input-desc" placeholder="Contoh: Makan Siang" class="w-full bg-slate-900 border border-slate-700 p-4 mt-1 rounded-2xl text-sm outline-none focus:border-blue-500 transition" required>
+                <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Detail</label>
+                <input type="text" id="input-desc" placeholder="Transaksi apa?" class="w-full bg-slate-900 border border-slate-700 p-4 mt-1 rounded-2xl text-sm outline-none focus:border-blue-500 transition" required>
             </div>
             <div>
                 <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Tipe</label>
                 <div class="radio-container mt-1">
                     <input type="radio" name="tx-type" id="type-in" value="INCOME" checked>
-                    <label for="type-in" class="radio-label">PEMASUKAN</label>
+                    <label for="type-in" class="radio-label">MASUK</label>
                     <input type="radio" name="tx-type" id="type-out" value="EXPENSE">
-                    <label for="type-out" class="radio-label">PENGELUARAN</label>
+                    <label for="type-out" class="radio-label">KELUAR</label>
                 </div>
             </div>
             <div>
@@ -93,55 +112,27 @@
         </form>
     </div>
 
-    <div class="glass p-6 rounded-[2rem]">
-        <div class="flex justify-between items-center mb-6 px-2">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Equity Curve</h3>
-            <span class="text-[9px] text-blue-400 font-bold bg-blue-500/10 px-3 py-1 rounded-full uppercase italic">Live Tracking</span>
-        </div>
-        <div class="h-44"><canvas id="myChart"></canvas></div>
-    </div>
-
     <div class="glass rounded-[2rem] overflow-hidden shadow-2xl border border-white/5">
-        <div class="p-5 bg-white/5 space-y-4">
-            <div class="flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider italic">History Database</h3>
-                <div class="flex gap-2">
-                    <button onclick="exportExcel()" class="bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
-                        <i class="fas fa-file-csv"></i> EXPORT
-                    </button>
-                    <button onclick="resetData()" class="bg-white/5 hover:bg-rose-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
-                        <i class="fas fa-rotate"></i> RESET
-                    </button>
-                </div>
-            </div>
-            
-            <div class="filter-container max-w-md">
-                <input type="radio" name="filter" id="filter-all" value="all" checked onchange="update()">
-                <label for="filter-all" class="filter-label">SEMUA</label>
-                
-                <input type="radio" name="filter" id="filter-day" value="day" onchange="update()">
-                <label for="filter-day" class="filter-label">HARI INI</label>
-                
-                <input type="radio" name="filter" id="filter-week" value="week" onchange="update()">
-                <label for="filter-week" class="filter-label">MINGGU INI</label>
-                
-                <input type="radio" name="filter" id="filter-month" value="month" onchange="update()">
-                <label for="filter-month" class="filter-label">BULAN INI</label>
-                
-                <input type="radio" name="filter" id="filter-year" value="year" onchange="update()">
-                <label for="filter-year" class="filter-label">TAHUN INI</label>
+        <div class="p-5 bg-white/5 flex flex-wrap justify-between items-center gap-4">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider italic">History Database</h3>
+            <div class="flex gap-2">
+                <button onclick="exportExcel()" class="bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fas fa-file-csv"></i> EXPORT
+                </button>
+                <button onclick="resetData()" class="bg-white/5 hover:bg-rose-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fas fa-rotate"></i> RESET
+                </button>
             </div>
         </div>
-        
         <div class="overflow-x-auto">
             <table class="excel-table">
                 <thead>
                     <tr>
-                        <th>Hari, Tanggal | Waktu</th>
+                        <th>Waktu</th>
                         <th>Keterangan</th>
                         <th>Tipe</th>
                         <th style="text-align: right;">Nominal</th>
-                        <th style="text-align: center;">Hapus</th>
+                        <th style="text-align: center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="log-container"></tbody>
@@ -150,7 +141,7 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('54n_fiscal_v8')) || [];
+        let db = JSON.parse(localStorage.getItem('54n_fiscal_v9')) || [];
         let chart;
 
         function update() {
@@ -158,63 +149,59 @@
             const filterValue = document.querySelector('input[name="filter"]:checked').value;
             container.innerHTML = '';
             
-            let bal = 0, inc = 0, exp = 0;
-            let balLine = [0];
+            document.getElementById('chart-tag').innerText = filterValue.toUpperCase();
 
-            // Filter logic
+            // Logic Filter
             const now = new Date();
             const filteredDb = db.filter(t => {
                 const tDate = new Date(t.date);
-                if (filterValue === 'day') {
-                    return tDate.toDateString() === now.toDateString();
-                } else if (filterValue === 'week') {
-                    const oneWeekAgo = new Date();
-                    oneWeekAgo.setDate(now.getDate() - 7);
-                    return tDate >= oneWeekAgo;
-                } else if (filterValue === 'month') {
-                    return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
-                } else if (filterValue === 'year') {
-                    return tDate.getFullYear() === now.getFullYear();
+                if (filterValue === 'day') return tDate.toDateString() === now.toDateString();
+                if (filterValue === 'week') {
+                    const diff = now.getTime() - tDate.getTime();
+                    return diff <= 7 * 24 * 60 * 60 * 1000;
                 }
+                if (filterValue === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                if (filterValue === 'year') return tDate.getFullYear() === now.getFullYear();
                 return true;
             });
 
-            // Calculate stats based on ALL data for accurate Equity Curve
-            db.forEach((t) => {
+            // Urutkan dari yang terlama untuk kalkulasi chart
+            const chartData = [...filteredDb].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            let balLine = [0];
+            let currentBal = 0;
+            let fInc = 0, fExp = 0;
+
+            chartData.forEach(t => {
                 const amt = parseInt(t.amt);
-                if(t.type === 'INCOME') { bal += amt; }
-                else { bal -= amt; }
-                balLine.push(bal);
+                if(t.type === 'INCOME') { currentBal += amt; fInc += amt; }
+                else { currentBal -= amt; fExp += amt; }
+                balLine.push(currentBal);
             });
 
-            // Calculate card stats and display table based on filtered data
-            let fInc = 0, fExp = 0, fBal = 0;
-            filteredDb.forEach((t, i) => {
-                const amt = parseInt(t.amt);
-                if(t.type === 'INCOME') { fInc += amt; fBal += amt; }
-                else { fExp += amt; fBal -= amt; }
-
+            // Tampilkan History (Urutan terbaru di atas)
+            filteredDb.reverse().forEach(t => {
                 const d = new Date(t.date);
-                const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+                const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
                 const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-                const timeStr = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} | ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+                const timeStr = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} | ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="text-slate-500 whitespace-nowrap italic">${timeStr}</td>
+                    <td class="text-slate-500 whitespace-nowrap italic text-[10px]">${timeStr}</td>
                     <td class="font-bold text-slate-200 uppercase">${t.desc}</td>
                     <td><span class="px-2 py-0.5 rounded text-[8px] font-extrabold ${t.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${t.type}</span></td>
-                    <td class="text-right font-black ${t.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'}">${amt.toLocaleString()}</td>
+                    <td class="text-right font-black ${t.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'}">${parseInt(t.amt).toLocaleString()}</td>
                     <td class="text-center"><button onclick="delById('${t.id}')" class="text-slate-700 hover:text-rose-500 transition px-2"><i class="fas fa-trash"></i></button></td>
                 `;
-                container.prepend(row);
+                container.appendChild(row);
             });
 
-            document.getElementById('bal-txt').innerText = 'Rp ' + fBal.toLocaleString();
+            document.getElementById('bal-txt').innerText = 'Rp ' + (fInc - fExp).toLocaleString();
             document.getElementById('inc-txt').innerText = 'Rp ' + fInc.toLocaleString();
             document.getElementById('exp-txt').innerText = 'Rp ' + fExp.toLocaleString();
 
-            localStorage.setItem('54n_fiscal_v8', JSON.stringify(db));
+            localStorage.setItem('54n_fiscal_v9', JSON.stringify(db));
             renderChart(balLine);
         }
 
@@ -229,7 +216,7 @@
                         data: bLine, borderColor: '#3b82f6', borderWidth: 3, tension: 0.4, pointRadius: 0, fill: true,
                         backgroundColor: (c) => {
                             const g = c.chart.ctx.createLinearGradient(0, 0, 0, 150);
-                            g.addColorStop(0, 'rgba(59, 130, 246, 0.15)'); g.addColorStop(1, 'transparent'); return g;
+                            g.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); g.addColorStop(1, 'transparent'); return g;
                         }
                     }]
                 },
@@ -243,11 +230,10 @@
 
         document.getElementById('tx-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const selectedType = document.querySelector('input[name="tx-type"]:checked').value;
             db.push({
-                id: Date.now().toString(), // Added ID for easier deletion
+                id: Date.now().toString(),
                 desc: document.getElementById('input-desc').value,
-                type: selectedType,
+                type: document.querySelector('input[name="tx-type"]:checked').value,
                 amt: parseInt(document.getElementById('input-amt').value),
                 date: new Date().toISOString()
             });
@@ -261,17 +247,11 @@
             let csv = "Tanggal,Keterangan,Tipe,Nominal\n" + db.map(t => `${new Date(t.date).toLocaleString()},${t.desc},${t.type},${t.amt}`).join("\n");
             const link = document.createElement("a");
             link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-            link.download = `54NFISCAL_${Date.now()}.csv`; link.click();
+            link.download = `54NFISCAL_Report.csv`; link.click();
         }
 
-        function delById(id) {
-            if(confirm('Hapus transaksi ini?')) {
-                db = db.filter(t => t.id !== id);
-                update();
-            }
-        }
-
-        function resetData() { if(confirm('Hapus semua data?')) { db = []; update(); } }
+        function delById(id) { if(confirm('Hapus?')) { db = db.filter(t => t.id !== id); update(); } }
+        function resetData() { if(confirm('RESET SEMUA?')) { db = []; update(); } }
         update();
     </script>
 </body>
