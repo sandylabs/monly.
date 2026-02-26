@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>54NFISCAL - Final Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0b1120; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .excel-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .excel-table th { background: rgba(59, 130, 246, 0.05); color: #64748b; text-transform: uppercase; padding: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: left; }
+        .excel-table td { padding: 12px; border: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+        .excel-table tr:nth-child(even) { background: rgba(255,255,255,0.01); }
+        .excel-table tr:hover { background: rgba(59, 130, 246, 0.05); }
+    </style>
+</head>
+<body class="p-4 md:p-10 max-w-5xl mx-auto space-y-6">
+
+    <header class="px-2">
+        <h1 class="text-3xl font-extrabold italic tracking-tighter text-white">54N<span class="text-blue-500">FISCAL</span></h1>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Financial Mastery Dashboard</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass p-6 rounded-[2rem] border-l-4 border-blue-500 shadow-xl">
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Saldo Saat Ini</p>
+            <h2 id="bal-txt" class="text-2xl font-extrabold text-white">Rp 0</h2>
+        </div>
+        <div class="glass p-6 rounded-[2rem] border-l-4 border-emerald-500">
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Pemasukan</p>
+            <h2 id="inc-txt" class="text-xl font-extrabold text-emerald-400">Rp 0</h2>
+        </div>
+        <div class="glass p-6 rounded-[2rem] border-l-4 border-rose-500">
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Pengeluaran</p>
+            <h2 id="exp-txt" class="text-xl font-extrabold text-rose-400">Rp 0</h2>
+        </div>
+    </div>
+
+    <div class="glass p-6 rounded-[2rem] border border-white/5 shadow-2xl">
+        <form id="tx-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="md:col-span-2">
+                <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Keterangan</label>
+                <input type="text" id="input-desc" placeholder="Lagi transaksi apa?" class="w-full bg-slate-900 border border-slate-700 p-4 mt-1 rounded-2xl text-sm outline-none focus:border-blue-500 transition" required>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Tipe</label>
+                <select id="input-type" class="w-full bg-slate-900 border border-slate-700 p-4 mt-1 rounded-2xl text-sm outline-none font-bold">
+                    <option value="INCOME">MASUK (+)</option>
+                    <option value="EXPENSE">KELUAR (-)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold text-slate-500 uppercase ml-2">Nominal</label>
+                <input type="number" id="input-amt" placeholder="Berapa?" class="w-full bg-slate-900 border border-slate-700 p-4 mt-1 rounded-2xl text-sm outline-none" required>
+            </div>
+            <div class="md:col-span-4">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-blue-500/20 active:scale-95 text-xs uppercase tracking-widest">
+                    Simpan Transaksi
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass p-6 rounded-[2rem]">
+        <div class="flex justify-between items-center mb-6 px-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Equity Curve</h3>
+            <span class="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full uppercase">Potential: <span id="pot-txt">0</span></span>
+        </div>
+        <div class="h-44"><canvas id="myChart"></canvas></div>
+    </div>
+
+    <div class="glass rounded-[2rem] overflow-hidden shadow-2xl border border-white/5">
+        <div class="p-5 bg-white/5 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider italic">History Database</h3>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="exportExcel()" class="bg-white/5 hover:bg-emerald-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fas fa-file-csv"></i> EXPORT
+                </button>
+                <button onclick="resetData()" class="bg-white/5 hover:bg-rose-600 text-slate-300 hover:text-white border border-white/10 text-[9px] font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fas fa-rotate"></i> RESET
+                </button>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Hari, Tanggal | Waktu</th>
+                        <th>Keterangan</th>
+                        <th>Tipe</th>
+                        <th style="text-align: right;">Nominal</th>
+                        <th style="text-align: center;">Opsi</th>
+                    </tr>
+                </thead>
+                <tbody id="log-container"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('54n_fiscal_v5')) || [];
+        let chart;
+
+        function update() {
+            const container = document.getElementById('log-container');
+            container.innerHTML = '';
+            let bal = 0, inc = 0, exp = 0, pot = 0;
+            let balLine = [0], potLine = [0];
+
+            db.forEach((t, i) => {
+                const amt = parseInt(t.amt);
+                if(t.type === 'INCOME') { inc += amt; bal += amt; pot += amt; }
+                else { exp += amt; bal -= amt; }
+                balLine.push(bal); potLine.push(pot);
+
+                // Format Waktu: Hari, Tanggal Bulan Tahun | Jam:Menit
+                const d = new Date(t.date);
+                const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+                const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+                
+                const dayName = days[d.getDay()];
+                const dateNum = d.getDate();
+                const monthName = months[d.getMonth()];
+                const yearNum = d.getFullYear();
+                const hours = d.getHours().toString().padStart(2, '0');
+                const minutes = d.getMinutes().toString().padStart(2, '0');
+                
+                const timeString = `${dayName}, ${dateNum} ${monthName} ${yearNum} | ${hours}:${minutes}`;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="text-slate-500 whitespace-nowrap italic">${timeString}</td>
+                    <td class="font-bold text-slate-200 uppercase">${t.desc}</td>
+                    <td><span class="px-2 py-0.5 rounded text-[8px] font-extrabold ${t.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${t.type}</span></td>
+                    <td class="text-right font-black ${t.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'}">${amt.toLocaleString()}</td>
+                    <td class="text-center"><button onclick="del(${i})" class="text-slate-700 hover:text-rose-500 transition px-2"><i class="fas fa-trash"></i></button></td>
+                `;
+                container.prepend(row);
+            });
+
+            document.getElementById('bal-txt').innerText = 'Rp ' + bal.toLocaleString();
+            document.getElementById('inc-txt').innerText = 'Rp ' + inc.toLocaleString();
+            document.getElementById('exp-txt').innerText = 'Rp ' + exp.toLocaleString();
+            document.getElementById('pot-txt').innerText = 'Rp ' + pot.toLocaleString();
+
+            localStorage.setItem('54n_fiscal_v5', JSON.stringify(db));
+            renderChart(balLine, potLine);
+        }
+
+        function renderChart(bLine, pLine) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: bLine.map((_, i) => i),
+                    datasets: [{
+                        data: bLine, borderColor: '#3b82f6', borderWidth: 2, tension: 0.4, pointRadius: 0, fill: true,
+                        backgroundColor: (c) => {
+                            const g = c.chart.ctx.createLinearGradient(0, 0, 0, 150);
+                            g.addColorStop(0, 'rgba(59, 130, 246, 0.1)'); g.addColorStop(1, 'transparent'); return g;
+                        }
+                    }, {
+                        data: pLine, borderColor: 'rgba(16, 185, 129, 0.2)', borderWidth: 1, borderDash: [5, 5], tension: 0.4, pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: false }, x: { display: false } }
+                }
+            });
+        }
+
+        document.getElementById('tx-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            db.push({
+                desc: document.getElementById('input-desc').value,
+                type: document.getElementById('input-type').value,
+                amt: parseInt(document.getElementById('input-amt').value),
+                date: new Date().toISOString()
+            });
+            e.target.reset(); update();
+        });
+
+        function exportExcel() {
+            if(db.length === 0) return alert('Data masih kosong, Bos!');
+            let csv = "Tanggal,Keterangan,Tipe,Nominal\n" + db.map(t => `${new Date(t.date).toLocaleString()},${t.desc},${t.type},${t.amt}`).join("\n");
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            link.download = `54NFISCAL_${Date.now()}.csv`; link.click();
+        }
+
+        function del(i) { if(confirm('Hapus baris ini?')) { db.splice(i, 1); update(); } }
+        function resetData() { if(confirm('Yakin RESET SEMUA DATA?')) { db = []; update(); } }
+        update();
+    </script>
+</body>
+</html>
