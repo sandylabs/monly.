@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monly. - Smart Finance</title>
+    <title>Monly. - Smart Decision AI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,16 +29,10 @@
         .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; }
         .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
         .grad-card { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); }
-        input, select { transition: all 0.3s ease; }
         
-        /* Dynamic Input Backgrounds */
         .input-in { background: rgba(99, 102, 241, 0.05) !important; border-color: rgba(99, 102, 241, 0.2) !important; }
         .input-out { background: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
         .input-debt { background: rgba(245, 158, 11, 0.05) !important; border-color: rgba(245, 158, 11, 0.2) !important; }
-        
-        .radio-box input:checked + label[for="type-in"] { background: #6366f1; color: white; }
-        .radio-box input:checked + label[for="type-out"] { background: #ef4444; color: white; }
-        .radio-box input:checked + label[for="type-debt"] { background: #f59e0b; color: white; }
 
         .typewriter::placeholder { border-right: 2px solid #6366f1; animation: blink 0.7s infinite; }
         @keyframes blink { 50% { border-color: transparent } }
@@ -63,41 +57,56 @@
     <div class="max-w-5xl mx-auto space-y-6">
         <header class="flex justify-between items-center px-2">
             <h1 class="text-4xl font-extrabold italic tracking-tighter text-primary">Monly<span class="text-secondary">.</span></h1>
-            <button onclick="toggleTheme()" class="w-11 h-11 glass rounded-2xl flex items-center justify-center hover:bg-white transition shadow-sm border border-slate-200 dark:border-slate-700">
+            <button onclick="toggleTheme()" class="w-11 h-11 glass rounded-2xl flex items-center justify-center shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 transition">
                 <i id="theme-icon" class="fas fa-moon text-primary"></i>
             </button>
         </header>
 
+        <div class="glass p-5 rounded-3xl flex items-center gap-5 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">
+            <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl">
+                <i class="fas fa-brain animate-pulse"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Monly AI Advisor</p>
+                <p id="ai-suggestion" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Menghitung strategi terbaik buat lo...</p>
+            </div>
+        </div>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="grad-card p-6 rounded-[2rem] text-white">
-                <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest text-white/80">Saldo Riil</p>
+            <div class="grad-card p-6 rounded-[2rem] text-white shadow-xl">
+                <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest">Saldo Riil</p>
                 <h2 id="bal-txt" class="text-xl font-extrabold mt-1 tracking-tight">Rp 0</h2>
             </div>
-            <div class="glass p-6 rounded-[2rem] border-l-4 border-indigo-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Masuk</p><h2 id="inc-txt" class="text-lg font-bold text-indigo-500 mt-1">Rp 0</h2></div>
-            <div class="glass p-6 rounded-[2rem] border-l-4 border-rose-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Keluar</p><h2 id="exp-txt" class="text-lg font-bold text-rose-500 mt-1">Rp 0</h2></div>
-            <div class="glass p-6 rounded-[2rem] border-l-4 border-amber-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Sisa Hutang</p><h2 id="debt-txt" class="text-lg font-bold text-amber-500 mt-1">Rp 0</h2></div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-indigo-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-xs">Pemasukan</p><h2 id="inc-txt" class="text-lg font-bold text-indigo-500 mt-1">Rp 0</h2></div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-rose-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-xs">Pengeluaran</p><h2 id="exp-txt" class="text-lg font-bold text-rose-500 mt-1">Rp 0</h2></div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-amber-500 shadow-sm"><p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-xs">Sisa Hutang</p><h2 id="debt-txt" class="text-lg font-bold text-amber-500 mt-1">Rp 0</h2></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-1">
                 <div class="glass p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <h3 class="text-[10px] font-black uppercase text-slate-400 mb-8 tracking-[0.2em] flex items-center gap-2">Catat Transaksi</h3>
+                    <h3 class="text-[10px] font-black uppercase text-slate-400 mb-8 tracking-[0.2em]">Catat Transaksi</h3>
                     <form id="tx-form" class="space-y-5">
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 ml-1 uppercase">Apa nih?</label>
-                            <input type="text" id="desc" placeholder="" class="typewriter w-full input-in border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm focus:ring-1 ring-primary/30 transition">
+                            <label class="text-[10px] font-bold text-slate-400 ml-1 uppercase">Keterangan</label>
+                            <input type="text" id="desc" class="typewriter w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm transition focus:ring-1 ring-primary/30">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 ml-1 uppercase">Kategori</label>
-                            <div class="flex gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl radio-box">
-                                <input type="radio" name="tx-type" id="type-in" value="INCOME" checked onchange="updateUIState()" class="hidden"><label for="type-in" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition">MASUK</label>
-                                <input type="radio" name="tx-type" id="type-out" value="EXPENSE" onchange="updateUIState()" class="hidden"><label for="type-out" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition">KELUAR</label>
-                                <input type="radio" name="tx-type" id="type-debt" value="DEBT" onchange="updateUIState()" class="hidden"><label for="type-debt" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition uppercase">Hutang</label>
+                            <div class="flex gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl">
+                                <input type="radio" name="tx-type" id="type-in" value="INCOME" checked onchange="updateUIState()" class="hidden peer/in">
+                                <label for="type-in" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition peer-checked/in:bg-primary peer-checked/in:text-white text-slate-500 uppercase">Masuk</label>
+                                
+                                <input type="radio" name="tx-type" id="type-out" value="EXPENSE" onchange="updateUIState()" class="hidden peer/out">
+                                <label for="type-out" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition peer-checked/out:bg-danger peer-checked/out:text-white text-slate-500 uppercase">Keluar</label>
+                                
+                                <input type="radio" name="tx-type" id="type-debt" value="DEBT" onchange="updateUIState()" class="hidden peer/debt">
+                                <label for="type-debt" class="flex-1 py-2 text-[10px] font-bold text-center rounded-xl cursor-pointer transition peer-checked/debt:bg-warning peer-checked/debt:text-white text-slate-500 uppercase">Hutang</label>
                             </div>
                         </div>
-                        <div id="deadline-box" class="hidden"><label class="text-[10px] font-bold text-amber-500 ml-1 uppercase">Deadline</label><input type="date" id="deadline" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 ml-1 uppercase">Nominal</label><input type="text" id="amt-display" placeholder="Rp 0" class="w-full input-in border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-base font-black"><input type="hidden" id="amt-raw"></div>
-                        <button type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-2xl transition hover:opacity-90 active:scale-95 text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">Simpan Data</button>
+                        <div id="deadline-box" class="hidden"><label class="text-[10px] font-bold text-amber-500 ml-1 uppercase">Batas Waktu</label><input type="date" id="deadline" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm"></div>
+                        <div><label class="text-[10px] font-bold text-slate-400 ml-1 uppercase">Nominal</label><input type="text" id="amt-display" placeholder="Rp 0" class="w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-base font-black transition"><input type="hidden" id="amt-raw"></div>
+                        <button type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-2xl transition hover:opacity-90 active:scale-95 text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">Simpan Transaksi</button>
                     </form>
                 </div>
             </div>
@@ -106,11 +115,11 @@
                 <div class="glass p-6 rounded-[2.5rem] h-64 border border-slate-100 dark:border-slate-800 shadow-sm"><canvas id="myChart"></canvas></div>
                 <div class="glass rounded-[2.5rem] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="p-6 bg-slate-50 dark:bg-white/5 flex justify-between items-center border-b dark:border-slate-800">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Ledger Database</h3>
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Riwayat Transaksi</h3>
                         <div class="flex gap-4">
-                            <button onclick="exportPDF()" class="text-rose-400 hover:scale-110 transition"><i class="fas fa-file-pdf"></i></button>
-                            <button onclick="exportCSV()" class="text-emerald-400 hover:text-emerald-500 transition"><i class="fas fa-file-csv"></i></button>
-                            <button onclick="requestReset()" class="text-slate-300 hover:text-rose-500 transition"><i class="fas fa-trash-can"></i></button>
+                            <button onclick="exportPDF()" class="text-rose-400 hover:text-rose-600 transition" title="Laporan PDF"><i class="fas fa-file-pdf text-xl"></i></button>
+                            <button onclick="exportCSV()" class="text-emerald-400 hover:text-emerald-600 transition" title="Ekspor CSV"><i class="fas fa-file-csv text-xl"></i></button>
+                            <button onclick="requestReset()" class="text-slate-300 hover:text-rose-500 transition"><i class="fas fa-trash-can text-lg"></i></button>
                         </div>
                     </div>
                     <div class="overflow-x-auto"><table class="w-full text-left text-[11px]"><tbody id="log-container" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
@@ -120,7 +129,7 @@
     </div>
 
     <div id="clean-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden modal-blur p-4 bg-slate-900/30 backdrop-blur-sm">
-        <div class="glass w-full max-w-[320px] rounded-[2.5rem] p-8 shadow-2xl modal-content-anim border border-white/50 text-center">
+        <div class="glass w-full max-w-[320px] rounded-[2.5rem] p-8 shadow-2xl modal-content-anim text-center border border-white/50">
             <div id="modal-icon-container" class="w-12 h-12 rounded-2xl mb-6 mx-auto flex items-center justify-center text-xl"></div>
             <h3 id="modal-title" class="text-sm font-bold text-slate-800 dark:text-white mb-2"></h3>
             <p id="modal-msg" class="text-[11px] text-slate-500 leading-relaxed mb-8"></p>
@@ -130,13 +139,13 @@
 
     <div id="modal-cicil" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-blur p-4 bg-slate-900/30 backdrop-blur-sm">
         <div class="glass w-full max-w-[320px] rounded-[2.5rem] p-8 border border-white/40 modal-content-anim shadow-none">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center italic">Cicil Hutang Dulu 💸</h3>
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center italic text-primary">Cicil Hutang 💸</h3>
             <div class="space-y-4">
                 <div class="text-center"><p id="cicil-desc" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 py-2 rounded-xl uppercase"></p></div>
-                <input type="text" id="cicil-amt-display" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl outline-none text-sm font-black text-center border border-slate-200 dark:border-slate-800"><input type="hidden" id="cicil-amt-raw">
+                <input type="text" id="cicil-amt-display" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl outline-none text-sm font-black text-center border border-slate-200 dark:border-slate-800 transition"><input type="hidden" id="cicil-amt-raw">
                 <div class="flex gap-2">
                     <button onclick="closeCicil()" class="flex-1 py-3 text-[10px] font-bold text-slate-400 uppercase">Batal</button>
-                    <button onclick="saveInstallment()" class="flex-1 py-3 bg-primary text-white rounded-xl text-[10px] font-bold uppercase shadow-none hover:bg-indigo-600 transition">Gas Bayar</button>
+                    <button onclick="saveInstallment()" class="flex-1 py-3 bg-primary text-white rounded-xl text-[10px] font-bold uppercase transition hover:bg-indigo-600 shadow-none">Gas Bayar</button>
                 </div>
             </div>
         </div>
@@ -145,22 +154,49 @@
     <script>
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('preloader').style.opacity = '0'; setTimeout(() => { document.getElementById('preloader').style.visibility = 'hidden'; }, 800); }, 1000); });
 
-        let db = JSON.parse(localStorage.getItem('monly_v7_final')) || [];
+        let db = JSON.parse(localStorage.getItem('monly_v10_ai')) || [];
         let chart; let activeDebtId = null;
         Chart.register(ChartDataLabels);
 
+        const typeMap = { INCOME: "MASUK", EXPENSE: "KELUAR", DEBT: "HUTANG" };
+
         function updateUIState() {
             const type = document.querySelector('input[name="tx-type"]:checked').value;
-            const descInput = document.getElementById('desc');
-            const amtInput = document.getElementById('amt-display');
-            const deadlineBox = document.getElementById('deadline-box');
+            const dI = document.getElementById('desc'); const aI = document.getElementById('amt-display'); const dl = document.getElementById('deadline-box');
+            dI.className = "typewriter w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm transition focus:ring-1 ring-primary/30 ";
+            aI.className = "w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-base font-black transition focus:ring-1 ring-primary/30 ";
+            if(type === 'INCOME') { dI.classList.add('input-in'); aI.classList.add('input-in'); dl.classList.add('hidden'); }
+            else if(type === 'EXPENSE') { dI.classList.add('input-out'); aI.classList.add('input-out'); dl.classList.add('hidden'); }
+            else if(type === 'DEBT') { dI.classList.add('input-debt'); aI.classList.add('input-debt'); dl.classList.remove('hidden'); }
+        }
 
-            descInput.className = "typewriter w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-sm transition ";
-            amtInput.className = "w-full border border-slate-200 dark:border-slate-800 p-4 rounded-2xl outline-none text-base font-black transition ";
-
-            if(type === 'INCOME') { descInput.classList.add('input-in'); amtInput.classList.add('input-in'); deadlineBox.classList.add('hidden'); }
-            else if(type === 'EXPENSE') { descInput.classList.add('input-out'); amtInput.classList.add('input-out'); deadlineBox.classList.add('hidden'); }
-            else if(type === 'DEBT') { descInput.classList.add('input-debt'); amtInput.classList.add('input-debt'); deadlineBox.classList.remove('hidden'); }
+        // --- Monly AI: Decision Tree Logic ---
+        function runAIAdvisor(totals) {
+            const aiEl = document.getElementById('ai-suggestion');
+            const ratio = totals.i > 0 ? (totals.e / totals.i) : 0;
+            
+            // Root Node: Cek Hutang
+            if (totals.d > totals.b) {
+                aiEl.innerText = "🛑 DARURAT: Beban hutang lo lebih gede dari saldo. Stop jajan non-esensial, fokus lunasin!";
+            } 
+            // Branch 1: Hutang Aman, Cek Rasio Belanja
+            else if (totals.d > 0) {
+                if (ratio > 0.8) {
+                    aiEl.innerText = "⚠️ BAHAYA: Hutang ada & pengeluaran lo udah 80% dari pemasukan. Rem dulu Bos!";
+                } else {
+                    aiEl.innerText = "📈 AMAN: Kondisi stabil. Mending sisa saldo dipake cicil hutang biar tidur lebih nyenyak.";
+                }
+            } 
+            // Branch 2: Bebas Hutang, Cek Tabungan
+            else {
+                if (totals.b === 0) {
+                    aiEl.innerText = "☕ SANTAI: Saldo kosong tapi gak ada hutang. Waktunya cari cuan baru!";
+                } else if (ratio < 0.5 && totals.b > 1000000) {
+                    aiEl.innerText = "🚀 MANTAP: Pengeluaran irit & saldo tebel. Cocok nih buat mulai investasi koin atau saham!";
+                } else {
+                    aiEl.innerText = "🔥 MERDEKA: Bebas hutang itu nikmat. Pertahanin pola hidup hemat lo, Bos!";
+                }
+            }
         }
 
         function showModal({title, msg, type, onConfirm}) {
@@ -169,15 +205,15 @@
             const btns = document.getElementById('modal-btns');
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-msg').innerText = msg;
-            if(type === 'danger') { iconWrap.className = "w-12 h-12 rounded-2xl mb-6 mx-auto flex items-center justify-center text-xl bg-rose-50 text-rose-500 dark:bg-rose-900/20"; iconWrap.innerHTML = '<i class="fas fa-circle-exclamation"></i>'; }
-            else { iconWrap.className = "w-12 h-12 rounded-2xl mb-6 mx-auto flex items-center justify-center text-xl bg-amber-50 text-amber-500 dark:bg-amber-900/20"; iconWrap.innerHTML = '<i class="fas fa-wallet"></i>'; }
-            btns.innerHTML = onConfirm ? `<button onclick="closeFinalModal()" class="w-full py-3 text-[10px] font-bold text-slate-400 uppercase">Batal</button><button id="modal-confirm-btn" class="w-full py-3 bg-rose-500 text-white rounded-xl text-[10px] font-bold uppercase">Hapus Semua</button>` : `<button onclick="closeFinalModal()" class="w-full py-3 bg-primary text-white rounded-xl text-[10px] font-bold uppercase">Siap, Bos!</button>`;
+            if(type === 'danger') { iconWrap.className = "w-12 h-12 rounded-2xl mb-6 mx-auto flex items-center justify-center text-xl bg-rose-50 text-rose-500 dark:bg-rose-900/20"; iconWrap.innerHTML = '<i class="fas fa-skull-crossbones"></i>'; }
+            else { iconWrap.className = "w-12 h-12 rounded-2xl mb-6 mx-auto flex items-center justify-center text-xl bg-amber-50 text-amber-500 dark:bg-amber-900/20"; iconWrap.innerHTML = '<i class="fas fa-hand-holding-dollar"></i>'; }
+            btns.innerHTML = onConfirm ? `<button onclick="closeFinalModal()" class="w-full py-3 text-[10px] font-bold text-slate-400 uppercase">Batal</button><button id="modal-confirm-btn" class="w-full py-3 bg-rose-500 text-white rounded-xl text-[10px] font-bold uppercase">Hapus Semua</button>` : `<button onclick="closeFinalModal()" class="w-full py-3 bg-primary text-white rounded-xl text-[10px] font-bold uppercase shadow-lg shadow-indigo-100">Siap, Bos!</button>`;
             if(onConfirm) document.getElementById('modal-confirm-btn').onclick = () => { onConfirm(); closeFinalModal(); };
             modal.classList.remove('hidden');
         }
         function closeFinalModal() { document.getElementById('clean-modal').classList.add('hidden'); }
 
-        const placeholders = ["Kopi susu pagi...", "Bayar cicilan...", "Gajian nih!", "Jajan seblak..."];
+        const placeholders = ["Ngopi cantik...", "Uang gajian!", "Bayar kosan...", "Jajan seblak..."];
         let pIdx = 0, charIdx = 0, isDeleting = false;
         function typeEffect() {
             const input = document.getElementById('desc'); const text = placeholders[pIdx];
@@ -217,12 +253,12 @@
                 row.innerHTML = `<td class="p-6">
                     <div class="text-[8px] text-slate-400 font-bold uppercase mb-1">${new Date(x.date).toLocaleDateString('id-ID')}</div>
                     <div class="font-bold text-slate-700 dark:text-slate-200 text-xs tracking-tight uppercase">${x.desc}</div>
-                    ${x.deadline ? `<div class="text-[8px] text-primary font-black mt-1">Due: ${x.deadline}</div>` : ''}
+                    ${x.deadline ? `<div class="text-[8px] text-primary font-black mt-1">Batas: ${x.deadline}</div>` : ''}
                 </td>
-                <td class="p-6 text-center"><span class="px-2 py-0.5 rounded-lg text-[7px] font-black ${x.type==='INCOME'?'bg-indigo-50 text-indigo-500':x.type==='DEBT'?'bg-indigo-50 text-primary':'bg-rose-50 text-rose-500'}">${x.type}</span></td>
+                <td class="p-6 text-center"><span class="px-2 py-0.5 rounded-lg text-[7px] font-black ${x.type==='INCOME'?'bg-indigo-50 text-indigo-500':x.type==='DEBT'?'bg-amber-50 text-amber-500':'bg-rose-50 text-rose-500'}">${typeMap[x.type]}</span></td>
                 <td class="p-6 text-right font-bold">
                     <div class="${x.type==='INCOME'?'text-indigo-600':'text-rose-500'} text-xs">Rp ${parseInt(x.amt).toLocaleString()}</div>
-                    ${x.type==='DEBT' ? `<div class="text-[8px] text-slate-400">Sisa: Rp ${s.toLocaleString()}</div>` : ''}
+                    ${x.type==='DEBT' ? `<div class="text-[8px] text-slate-400 italic">Sisa: Rp ${s.toLocaleString()}</div>` : ''}
                 </td>
                 <td class="p-6 text-right"><div class="flex justify-end gap-3">
                         ${x.type==='DEBT' && s > 0 ? `<button onclick="openCicil('${x.id}', '${x.desc}', ${s})" class="text-primary hover:scale-110 transition"><i class="fas fa-hand-holding-dollar"></i></button>` : ''}
@@ -230,23 +266,25 @@
                     </div></td>`;
                 container.appendChild(row);
             });
-
             document.getElementById('bal-txt').innerText = 'Rp ' + t.b.toLocaleString('id-ID');
             document.getElementById('inc-txt').innerText = 'Rp ' + t.i.toLocaleString('id-ID');
             document.getElementById('exp-txt').innerText = 'Rp ' + t.e.toLocaleString('id-ID');
             document.getElementById('debt-txt').innerText = 'Rp ' + t.d.toLocaleString('id-ID');
-            renderChart(bL, dL); localStorage.setItem('monly_v7_final', JSON.stringify(db));
+            renderChart(bL, dL); 
+            runAIAdvisor(t); // Run the Decision Tree
+            localStorage.setItem('monly_v10_ai', JSON.stringify(db));
         }
 
         function renderChart(bl, dl) {
             const ctx = document.getElementById('myChart').getContext('2d'); if(chart) chart.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
             chart = new Chart(ctx, {
                 type: 'line',
                 data: { labels: bl.map((_,i)=>i), datasets: [
                     { label: 'Saldo', data: bl, borderColor: '#6366f1', borderWidth: 3, tension: 0.4, pointRadius: 4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.05)' },
-                    { label: 'Hutang', data: dl, borderColor: '#a855f7', borderWidth: 2, borderDash:[5,5], tension: 0.4, pointRadius: 0 }
+                    { label: 'Hutang', data: dl, borderColor: '#f59e0b', borderWidth: 2, borderDash:[5,5], tension: 0.4, pointRadius: 0 }
                 ]},
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { align: 'top', color: '#6366f1', font: { weight: '700', size: 9 }, formatter: (v)=>v>0?v.toLocaleString():'' } }, scales: { y: { display: false }, x: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { align: 'top', color: isDark?'#fff':'#6366f1', font: { weight: '700', size: 9 }, formatter: (v)=>v>0?v.toLocaleString():'' } }, scales: { y: { display: false }, x: { display: false } } }
             });
         }
 
@@ -255,7 +293,7 @@
             const type = document.querySelector('input[name="tx-type"]:checked').value;
             const t = calculateTotals();
             if(!amt) return showModal({title: "Nominal Kosong", msg: "Duitnya berapa nih?", type: "warning"});
-            if(type === 'EXPENSE' && amt > t.b) return showModal({title: "Saldo Kurang!", msg: `Sisa saldo Rp ${t.b.toLocaleString()}. Catat HUTANG aja dulu.`, type: "danger"});
+            if(type === 'EXPENSE' && amt > t.b) return showModal({title: "Saldo Kurang!", msg: `Sisa saldo cuma Rp ${t.b.toLocaleString()}. Gak bisa beli dulu ya!`, type: "danger"});
             db.push({ id: Date.now().toString(), desc: document.getElementById('desc').value, type: type, amt: amt, deadline: document.getElementById('deadline').value, paid: 0, date: new Date().toISOString() });
             e.target.reset(); document.getElementById('amt-raw').value = ""; document.getElementById('amt-display').value = ""; updateUIState(); update();
         });
@@ -265,19 +303,61 @@
         function saveInstallment() {
             const a = parseInt(document.getElementById('cicil-amt-raw').value); const t = calculateTotals();
             if(!a) return showModal({title: "Kosong", msg: "Berapa cicilannya?", type: "warning"});
-            if(a > t.b) return showModal({title: "Gak Bisa Bayar!", msg: `Saldo lo cuma Rp ${t.b.toLocaleString()}.`, type: "danger"});
+            if(a > t.b) return showModal({title: "Gak Bisa!", msg: `Saldo lo gak cukup buat bayar cicilan Rp ${a.toLocaleString()}.`, type: "danger"});
             const target = db.find(x => x.id === activeDebtId);
-            if(a > (target.amt - (target.paid||0))) return showModal({title: "Kegedean!", msg: "Nominal cicilan melebihi sisa.", type: "warning"});
+            if(a > (target.amt - (target.paid||0))) return showModal({title: "Kegedean!", msg: "Nominal cicilan melebihi sisa hutang.", type: "warning"});
             target.paid = (target.paid || 0) + a;
             db.push({ id: Date.now().toString(), desc: "Cicil: " + target.desc, type: 'EXPENSE', amt: a, date: new Date().toISOString() });
             closeCicil(); update();
         }
 
-        function requestReset() { showModal({title: "Hapus Semua?", msg: "Yakin mau reset?", type: "danger", onConfirm: () => { db = []; update(); } }); }
+        function requestReset() { showModal({title: "Hapus Semua?", msg: "Data bakal ilang selamanya loh. Yakin?", type: "danger", onConfirm: () => { db = []; update(); } }); }
         function del(id) { db = db.filter(x => x.id !== id); update(); }
         function exportCSV() { const t = calculateTotals(); let csv = "Tanggal,Ket,Tipe,Nominal\n" + db.map(x => `${new Date(x.date).toLocaleDateString()},${x.desc},${x.type},${x.amt}`).join("\n"); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); link.download = `Monly_Report.csv`; link.click(); }
-        async function exportPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Monly. Report", 14, 20); doc.autoTable({ startY: 30, head: [['Ket', 'Tipe', 'Nominal']], body: db.map(x=>[x.desc, x.type, parseInt(x.amt).toLocaleString()]) }); doc.save(`Report.pdf`); }
-        
+
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const t = calculateTotals();
+            const now = new Date().toLocaleString('id-ID');
+
+            // Corporate Style PDF
+            doc.setFontSize(28); doc.setTextColor(99, 102, 241); doc.setFont(undefined, 'bold'); doc.text("Monly.", 14, 25);
+            doc.setFontSize(10); doc.setTextColor(100); doc.setFont(undefined, 'normal'); doc.text(`LAPORAN KEUANGAN PERSONAL`, 14, 33);
+            doc.text(`Dicetak pada: ${now}`, 14, 38);
+            doc.setDrawColor(99, 102, 241); doc.setLineWidth(0.5); doc.line(14, 42, 196, 42);
+
+            // Summary Info Box
+            doc.setFillColor(245, 247, 255); doc.roundedRect(14, 48, 182, 32, 4, 4, 'F');
+            doc.setFontSize(10); doc.setTextColor(50); doc.setFont(undefined, 'bold'); doc.text("RINGKASAN KEUANGAN", 20, 56);
+            
+            doc.setFontSize(9); doc.setTextColor(30, 41, 59); doc.setFont(undefined, 'normal');
+            doc.text(`Saldo Aktif  : Rp ${t.b.toLocaleString('id-ID')}`, 20, 64);
+            doc.text(`Total Masuk  : Rp ${t.i.toLocaleString('id-ID')}`, 80, 64);
+            doc.text(`Total Keluar : Rp ${t.e.toLocaleString('id-ID')}`, 140, 64);
+            doc.setTextColor(245, 158, 11); doc.setFont(undefined, 'bold');
+            doc.text(`Sisa Hutang  : Rp ${t.d.toLocaleString('id-ID')}`, 20, 72);
+
+            const tableData = db.map(x => [
+                new Date(x.date).toLocaleDateString('id-ID'),
+                x.desc.toUpperCase(),
+                typeMap[x.type],
+                `Rp ${parseInt(x.amt).toLocaleString('id-ID')}`
+            ]);
+
+            doc.autoTable({
+                startY: 88,
+                head: [['TANGGAL', 'KETERANGAN', 'TIPE', 'NOMINAL']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [99, 102, 241], halign: 'center' },
+                columnStyles: { 3: { halign: 'right' }, 2: { halign: 'center' } },
+                styles: { fontSize: 8, cellPadding: 4 }
+            });
+
+            doc.save(`Monly_Executive_Audit_${Date.now()}.pdf`);
+        }
+
         updateUIState(); update();
     </script>
 </body>
