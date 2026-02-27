@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monly. - Atur Duit Lo</title>
+    <title>Monly. - Financial Intelligence</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -21,8 +27,8 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; }
         .glass { 
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
         }
@@ -40,7 +46,6 @@
             color: white;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
-        /* Typewriter Cursor */
         .typewriter::placeholder { border-right: 2px solid #6366f1; animation: blink 0.7s infinite; }
         @keyframes blink { 50% { border-color: transparent } }
     </style>
@@ -51,23 +56,22 @@
         <header class="flex justify-between items-center px-2">
             <div>
                 <h1 class="text-4xl font-extrabold italic tracking-tighter text-primary">Monly<span class="text-secondary">.</span></h1>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-sm">Biar duit lo nggak bocor alus</p>
             </div>
-            <button onclick="toggleTheme()" class="w-12 h-12 glass rounded-2xl flex items-center justify-center hover:scale-110 transition">
+            <button onclick="toggleTheme()" class="w-12 h-12 glass rounded-2xl flex items-center justify-center hover:scale-110 transition shadow-sm">
                 <i id="theme-icon" class="fas fa-moon text-primary text-xl"></i>
             </button>
         </header>
 
-        <div class="glass p-4 rounded-3xl flex items-center gap-4">
+        <div class="glass p-4 rounded-3xl flex items-center gap-4 border-l-4 border-primary">
             <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <i class="fas fa-wand-magic-sparkles text-primary animate-pulse"></i>
             </div>
-            <p id="ai-suggestion" class="text-xs italic font-semibold text-slate-600 dark:text-slate-300">Lagi ngintip dompet lo nih buat dianalisa...</p>
+            <p id="ai-suggestion" class="text-xs italic font-semibold text-slate-600 dark:text-slate-300">Menunggu data untuk dianalisa...</p>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="grad-card p-6 rounded-[2.5rem] text-white">
-                <p class="text-[9px] font-bold opacity-80 uppercase tracking-widest">Sisa Duit Lo</p>
+                <p class="text-[9px] font-bold opacity-80 uppercase tracking-widest">Saldo Riil</p>
                 <h2 id="bal-txt" class="text-xl font-extrabold mt-1">Rp 0</h2>
             </div>
             <div class="glass p-6 rounded-[2.5rem] border-l-4 border-indigo-500">
@@ -88,15 +92,15 @@
             <div class="lg:col-span-1 space-y-6">
                 <div class="glass p-8 rounded-[2.5rem] shadow-xl">
                     <h3 class="text-xs font-bold uppercase text-primary mb-6 tracking-widest flex items-center gap-2">
-                        <i class="fas fa-pen-nib"></i> Catat Baru Yuk!
+                        <i class="fas fa-pen-nib"></i> Catat Transaksi
                     </h3>
                     <form id="tx-form" class="space-y-4">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Mau nyatat apa?</label>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Keterangan</label>
                             <input type="text" id="desc" placeholder="" class="typewriter w-full bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-2xl outline-none text-sm focus:ring-2 ring-primary/20" required>
                         </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Jenis transaksinya?</label>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Tipe</label>
                             <div class="flex gap-2 radio-box">
                                 <input type="radio" name="tx-type" id="type-in" value="INCOME" checked onchange="toggleForm()" class="hidden">
                                 <label for="type-in" class="flex-1 py-3 bg-slate-100 dark:bg-slate-900 text-[10px] font-bold text-center rounded-xl cursor-pointer">MASUK</label>
@@ -106,31 +110,32 @@
                                 <label for="type-debt" class="flex-1 py-3 bg-slate-100 dark:bg-slate-900 text-[10px] font-bold text-center rounded-xl cursor-pointer">HUTANG</label>
                             </div>
                         </div>
-                        <div id="deadline-box" class="hidden space-y-1">
-                            <label class="text-[10px] font-bold text-accent ml-2 uppercase">Kapan kudu lunas?</label>
+                        <div id="deadline-box" class="hidden">
+                            <label class="text-[10px] font-bold text-accent ml-2 uppercase">Deadline Lunas</label>
                             <input type="date" id="deadline" class="w-full bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-2xl outline-none text-sm">
                         </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Nominalnya berapa?</label>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Nominal</label>
                             <input type="text" id="amt-display" placeholder="Rp 0" class="w-full bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-2xl outline-none text-sm font-bold">
                             <input type="hidden" id="amt-raw">
                         </div>
-                        <button type="submit" class="w-full bg-primary hover:bg-indigo-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-primary/30 active:scale-95 text-xs uppercase tracking-[0.2em] mt-2">Beres, Simpan!</button>
+                        <button type="submit" class="w-full bg-primary hover:bg-indigo-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-primary/30 active:scale-95 text-xs uppercase tracking-[0.2em] mt-2">Simpan Data</button>
                     </form>
                 </div>
             </div>
 
             <div class="lg:col-span-2 space-y-6">
                 <div class="glass p-6 rounded-[2.5rem]">
-                    <div class="h-60"><canvas id="myChart"></canvas></div>
+                    <div class="h-64"><canvas id="myChart"></canvas></div>
                 </div>
 
                 <div class="glass rounded-[2.5rem] overflow-hidden">
                     <div class="p-6 bg-white/10 flex justify-between items-center border-b border-white/20">
-                        <h3 class="text-xs font-bold uppercase tracking-widest italic text-indigo-500">History Log</h3>
-                        <div class="flex gap-3">
-                            <button onclick="exportCSV()" class="text-emerald-500 hover:scale-110 transition"><i class="fas fa-file-csv"></i></button>
-                            <button onclick="resetData()" class="text-rose-500 hover:scale-110 transition"><i class="fas fa-trash-can"></i></button>
+                        <h3 class="text-xs font-bold uppercase tracking-widest italic text-indigo-500">Riwayat Transaksi</h3>
+                        <div class="flex gap-4">
+                            <button onclick="exportPDF()" class="text-rose-500 hover:scale-110 transition" title="Export PDF"><i class="fas fa-file-pdf text-xl"></i></button>
+                            <button onclick="exportCSV()" class="text-emerald-500 hover:scale-110 transition" title="Export CSV"><i class="fas fa-file-csv text-xl"></i></button>
+                            <button onclick="resetData()" class="text-slate-400 hover:text-rose-500 transition"><i class="fas fa-trash-can text-lg"></i></button>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -145,34 +150,30 @@
 
     <div id="modal-cicil" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-6">
         <div class="glass p-8 w-full max-w-sm space-y-6 rounded-[2.5rem]">
-            <h3 class="text-lg font-extrabold text-center tracking-tight">Cicil Hutang Dulu 💸</h3>
+            <h3 class="text-lg font-extrabold text-center tracking-tight">Cicil Hutang 💸</h3>
             <p id="cicil-desc" class="text-[10px] text-center text-slate-500 uppercase font-bold italic"></p>
             <div class="space-y-2">
-                <label class="text-[9px] font-bold text-slate-400 ml-2 uppercase">Mau bayar berapa?</label>
+                <label class="text-[9px] font-bold text-slate-400 ml-2 uppercase">Nominal Bayar</label>
                 <input type="text" id="cicil-amt-display" class="w-full bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-2xl outline-none text-sm font-bold">
                 <input type="hidden" id="cicil-amt-raw">
             </div>
             <div class="flex gap-3">
                 <button onclick="closeModal()" class="flex-1 py-4 font-bold text-slate-400 hover:text-slate-600 transition">BATAL</button>
-                <button onclick="saveInstallment()" class="flex-1 bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/30">GAS BAYAR</button>
+                <button onclick="saveInstallment()" class="flex-1 bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/30">BAYAR</button>
             </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('monly_pro_aesthetic')) || [];
+        let db = JSON.parse(localStorage.getItem('monly_pro_final')) || [];
         let chart;
         let activeDebtId = null;
 
-        // --- Typewriter Placeholder Logic ---
-        const placeholders = [
-            "Beli kopi susu senja...",
-            "Gaji bulan ini cair nih!",
-            "Bayar hutang ke temen...",
-            "Top up saldo e-wallet...",
-            "Duit parkir motor...",
-            "Jajan seblak level pedas..."
-        ];
+        // Register Chart Labels Plugin
+        Chart.register(ChartDataLabels);
+
+        // --- Typewriter Placeholder ---
+        const placeholders = ["Kopi susu pagi...", "Gaji cair!", "Bayar kosan...", "Jajan seblak...", "Nemu duit di celana...", "Tagihan kartu..."];
         let pIdx = 0, charIdx = 0, isDeleting = false;
         function typeEffect() {
             const input = document.getElementById('desc');
@@ -188,26 +189,26 @@
         }
         typeEffect();
 
-        // --- Theme Toggle ---
+        // --- Theme Management ---
         function toggleTheme() {
             const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                icon.className = 'fas fa-moon text-primary';
+                document.getElementById('theme-icon').className = 'fas fa-moon text-primary';
                 localStorage.setItem('monly_theme', 'light');
             } else {
                 html.classList.add('dark');
-                icon.className = 'fas fa-sun text-secondary';
+                document.getElementById('theme-icon').className = 'fas fa-sun text-secondary';
                 localStorage.setItem('monly_theme', 'dark');
             }
+            update();
         }
         if (localStorage.getItem('monly_theme') === 'dark') {
             document.documentElement.classList.add('dark');
             document.getElementById('theme-icon').className = 'fas fa-sun text-secondary';
         }
 
-        // --- Currency Formatter ---
+        // --- Currency Handling ---
         const formatInput = (displayId, rawId) => {
             const display = document.getElementById(displayId);
             const raw = document.getElementById(rawId);
@@ -224,19 +225,31 @@
             document.getElementById('deadline-box').classList.toggle('hidden', !document.getElementById('type-debt').checked);
         }
 
+        function calculateTotals() {
+            let bal = 0, inc = 0, exp = 0, debt = 0;
+            db.forEach(t => {
+                const a = parseInt(t.amt);
+                if(t.type === 'INCOME') { bal += a; inc += a; }
+                else if(t.type === 'EXPENSE') { bal -= a; exp += a; }
+                else if(t.type === 'DEBT') { debt += (a - (t.paid || 0)); }
+            });
+            return { bal, inc, exp, debt };
+        }
+
         function update() {
             const container = document.getElementById('log-container');
             container.innerHTML = '';
-            let bal = 0, inc = 0, exp = 0, debtTotal = 0;
+            const totals = calculateTotals();
+            let currentBal = 0, currentDebt = 0;
             let balLine = [0], debtLine = [0];
 
             db.sort((a,b) => new Date(a.date) - new Date(b.date));
             db.forEach(t => {
                 const a = parseInt(t.amt);
-                if(t.type === 'INCOME') { bal += a; inc += a; }
-                else if(t.type === 'EXPENSE') { bal -= a; exp += a; }
-                else if(t.type === 'DEBT') { debtTotal += (a - (t.paid || 0)); }
-                balLine.push(bal); debtLine.push(debtTotal);
+                if(t.type === 'INCOME') currentBal += a;
+                else if(t.type === 'EXPENSE') currentBal -= a;
+                else if(t.type === 'DEBT') currentDebt += (a - (t.paid || 0));
+                balLine.push(currentBal); debtLine.push(currentDebt);
             });
 
             db.slice().reverse().forEach(t => {
@@ -246,16 +259,16 @@
                 row.className = sisa === 0 && t.type === 'DEBT' ? "opacity-30" : "";
                 row.innerHTML = `
                     <td class="p-5">
-                        <div class="text-[8px] text-slate-400 font-bold uppercase tracking-tighter">${d.toLocaleDateString('id-ID')} | ${d.getHours()}:${d.getMinutes()}</div>
+                        <div class="text-[8px] text-slate-400 font-bold uppercase">${d.toLocaleDateString('id-ID')} | ${d.getHours()}:${d.getMinutes()}</div>
                         <div class="font-bold text-slate-700 dark:text-slate-200 uppercase text-xs">${t.desc}</div>
-                        ${t.deadline ? `<div class="text-[8px] text-primary font-black italic">Batas: ${t.deadline}</div>` : ''}
+                        ${t.deadline ? `<div class="text-[8px] text-primary font-black">Deadline: ${t.deadline}</div>` : ''}
                     </td>
                     <td class="p-5 text-center">
                         <span class="px-2 py-0.5 rounded-md text-[7px] font-black ${t.type === 'INCOME' ? 'bg-indigo-500/10 text-indigo-500' : t.type === 'DEBT' ? 'bg-primary/10 text-primary' : 'bg-rose-500/10 text-rose-500'}">${t.type}</span>
                     </td>
                     <td class="p-5 text-right font-bold">
                         <div class="${t.type === 'INCOME' ? 'text-indigo-600' : 'text-rose-500'}">Rp ${parseInt(t.amt).toLocaleString()}</div>
-                        ${t.type === 'DEBT' ? `<div class="text-[8px] text-slate-400 font-bold">Sisa: Rp ${sisa.toLocaleString()}</div>` : ''}
+                        ${t.type === 'DEBT' ? `<div class="text-[8px] text-slate-400">Sisa: Rp ${sisa.toLocaleString()}</div>` : ''}
                     </td>
                     <td class="p-5 text-right">
                         <div class="flex items-center justify-end gap-3">
@@ -267,18 +280,47 @@
                 container.appendChild(row);
             });
 
-            document.getElementById('bal-txt').innerText = 'Rp ' + bal.toLocaleString('id-ID');
-            document.getElementById('inc-txt').innerText = 'Rp ' + inc.toLocaleString('id-ID');
-            document.getElementById('exp-txt').innerText = 'Rp ' + exp.toLocaleString('id-ID');
-            document.getElementById('debt-txt').innerText = 'Rp ' + debtTotal.toLocaleString('id-ID');
+            document.getElementById('bal-txt').innerText = 'Rp ' + totals.bal.toLocaleString('id-ID');
+            document.getElementById('inc-txt').innerText = 'Rp ' + totals.inc.toLocaleString('id-ID');
+            document.getElementById('exp-txt').innerText = 'Rp ' + totals.exp.toLocaleString('id-ID');
+            document.getElementById('debt-txt').innerText = 'Rp ' + totals.debt.toLocaleString('id-ID');
 
             renderChart(balLine, debtLine);
-            localStorage.setItem('monly_pro_aesthetic', JSON.stringify(db));
+            localStorage.setItem('monly_pro_final', JSON.stringify(db));
             
             const ai = document.getElementById('ai-suggestion');
-            if(debtTotal > bal) ai.innerText = "🚨 Bos, saldo lo kesalip hutang. Rem jajan dulu, fokus lunasin tagihan!";
-            else if (debtTotal > 0) ai.innerText = "✅ Saldo aman. Fokus cicil sisa hutang Rp " + debtTotal.toLocaleString() + " mumpung ada dana!";
-            else ai.innerText = "🔥 Mantap! Lo bebas hutang, dompet lagi sehat-sehatnya nih.";
+            if(totals.debt > totals.bal) ai.innerText = "🛑 Peringatan: Beban hutang melebihi saldo aktif. Fokus lunasin dulu ya!";
+            else if (totals.debt > 0) ai.innerText = "📈 Saldo cukup aman buat nyicil. Cek deadline paling dekat!";
+            else ai.innerText = "🚀 Mantap! Bebas hutang. Saatnya nabung buat masa depan.";
+        }
+
+        function renderChart(bl, dl) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if(chart) chart.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: bl.map((_,i)=>i),
+                    datasets: [
+                        { label: 'Saldo', data: bl, borderColor: '#6366f1', borderWidth: 3, tension: 0.4, pointRadius: 4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' },
+                        { label: 'Hutang', data: dl, borderColor: '#a855f7', borderWidth: 2, borderDash: [5,5], tension: 0.4, pointRadius: 0 }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: {
+                            align: 'top',
+                            color: isDark ? '#fff' : '#6366f1',
+                            font: { weight: 'bold', size: 9 },
+                            formatter: (val) => val > 0 ? val.toLocaleString() : ''
+                        }
+                    }, 
+                    scales: { y: { display: false }, x: { display: false } } 
+                }
+            });
         }
 
         function openModal(id, desc, sisa) {
@@ -290,52 +332,87 @@
 
         function saveInstallment() {
             const amt = parseInt(document.getElementById('cicil-amt-raw').value);
-            if(!amt) return alert("Nominalnya isi dulu, Bos!");
+            if(!amt) return alert("Isi nominalnya dulu!");
             const target = db.find(t => t.id === activeDebtId);
             const sisa = target.amt - (target.paid || 0);
-            if(amt > sisa) return alert("Nominal cicilan kegedean!");
+            if(amt > sisa) return alert("Cicilan melebihi sisa!");
             target.paid = (target.paid || 0) + amt;
             db.push({ id: Date.now().toString(), desc: "Cicil: " + target.desc, type: 'EXPENSE', amt: amt, date: new Date().toISOString() });
             closeModal(); update();
         }
 
-        function renderChart(bl, dl) {
-            const ctx = document.getElementById('myChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: bl.map((_,i)=>i),
-                    datasets: [
-                        { label: 'Saldo', data: bl, borderColor: '#6366f1', borderWidth: 3, tension: 0.4, pointRadius: 0, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' },
-                        { label: 'Hutang', data: dl, borderColor: '#a855f7', borderWidth: 2, borderDash: [5,5], tension: 0.4, pointRadius: 0 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
-            });
-        }
-
         document.getElementById('tx-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const type = document.querySelector('input[name="tx-type"]:checked').value;
             db.push({
                 id: Date.now().toString(),
                 desc: document.getElementById('desc').value,
-                type: type,
+                type: document.querySelector('input[name="tx-type"]:checked').value,
                 amt: parseInt(document.getElementById('amt-raw').value),
-                deadline: type === 'DEBT' ? document.getElementById('deadline').value : null,
+                deadline: document.getElementById('deadline').value,
                 paid: 0, date: new Date().toISOString()
             });
             e.target.reset(); document.getElementById('amt-raw').value = ""; document.getElementById('amt-display').value = ""; update();
         });
 
-        function del(id) { if(confirm('Yakin hapus ini, Bos?')) { db = db.filter(t => t.id !== id); update(); } }
-        function resetData() { if(confirm('HAPUS SEMUA DATA?')) { db = []; update(); } }
+        // --- Export Functions ---
         function exportCSV() {
-            let c = "Tanggal,Keterangan,Tipe,Nominal\n" + db.map(t => `${t.date},${t.desc},${t.type},${t.amt}`).join("\n");
-            let link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([c], {type:'text/csv'}));
-            link.download = "Monly_Financial_Report.csv"; link.click();
+            const totals = calculateTotals();
+            let csv = "Tanggal,Keterangan,Tipe,Nominal,Sisa Hutang\n" + 
+                db.map(t => `${new Date(t.date).toLocaleDateString()},${t.desc},${t.type},${t.amt},${t.type==='DEBT'?t.amt-(t.paid||0):''}`).join("\n");
+            
+            csv += `\n\nREKAPITULASI\n`;
+            csv += `Sisa Duit,Rp ${totals.bal}\n`;
+            csv += `Total Masuk,Rp ${totals.inc}\n`;
+            csv += `Total Keluar,Rp ${totals.exp}\n`;
+            csv += `Total Hutang,Rp ${totals.debt}\n`;
+
+            const link = document.createElement('a'); 
+            link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+            link.download = `Monly_Report_${Date.now()}.csv`; link.click();
         }
+
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const totals = calculateTotals();
+            const now = new Date().toLocaleString('id-ID');
+
+            // Header
+            doc.setFontSize(22); doc.setTextColor(99, 102, 241); doc.text("Monly.", 14, 20);
+            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Laporan Keuangan Per tanggal: ${now}`, 14, 28);
+            
+            // Summary Cards (Draw Rects)
+            doc.setDrawColor(230); doc.setFillColor(245, 247, 255); doc.roundedRect(14, 35, 180, 25, 3, 3, 'FD');
+            doc.setFontSize(10); doc.setTextColor(50); doc.setFont(undefined, 'bold');
+            doc.text("RINGKASAN KEUANGAN", 20, 42);
+            doc.setFont(undefined, 'normal'); doc.setFontSize(9);
+            doc.text(`Saldo Aktif: Rp ${totals.bal.toLocaleString()}`, 20, 50);
+            doc.text(`Total Masuk: Rp ${totals.inc.toLocaleString()}`, 70, 50);
+            doc.text(`Total Keluar: Rp ${totals.exp.toLocaleString()}`, 120, 50);
+            doc.text(`Sisa Hutang: Rp ${totals.debt.toLocaleString()}`, 20, 55);
+
+            // Table
+            const tableData = db.map(t => [
+                new Date(t.date).toLocaleDateString('id-ID'),
+                t.desc,
+                t.type,
+                `Rp ${parseInt(t.amt).toLocaleString()}`
+            ]);
+
+            doc.autoTable({
+                startY: 65,
+                head: [['Tanggal', 'Keterangan', 'Tipe', 'Nominal']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [99, 102, 241] },
+                styles: { fontSize: 8 }
+            });
+
+            doc.save(`Monly_Executive_Report_${Date.now()}.pdf`);
+        }
+
+        function del(id) { if(confirm('Hapus log ini?')) { db = db.filter(t => t.id !== id); update(); } }
+        function resetData() { if(confirm('RESET SEMUA DATA?')) { db = []; update(); } }
         update();
     </script>
 </body>
